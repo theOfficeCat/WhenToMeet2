@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}No encontrado · WhenToMeet 2{% endblock %}
+{% block content %}
+<section class="card narrow">
+  <h1>Evento no encontrado</h1>
+  <p class="muted">Puede que el enlace esté mal escrito o que el evento ya no exista.</p>
+  <a class="btn primary" href="{{ url_for('index') }}">Crear un evento</a>
+</section>
+{% endblock %}

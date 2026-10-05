@@ -1,0 +1,159 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate compose file
+        run: docker compose config -q
+
+      - name: Build image
+        run: docker compose build
+
+      - name: Start container
+        run: docker compose up -d
+
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5000/healthz; then
+              echo
+              echo "Contenedor saludable"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "El contenedor no respondió a tiempo"
+          docker compose logs
+          exit 1
+
+      - name: Smoke test
+        run: |
+          python3 - <<'PY'
+          import json
+          import urllib.parse
+          import urllib.request
+
+          base = "http://127.0.0.1:5000"
+
+
+          def get(path):
+              with urllib.request.urlopen(base + path) as response:
+                  assert response.status == 200, path
+                  return response.read()
+
+
+          def post(path, body, content_type):
+              request = urllib.request.Request(
+                  base + path,
+                  data=body,
+                  method="POST",
+                  headers={"Content-Type": content_type},
+              )
+              with urllib.request.urlopen(request) as response:
+                  assert response.status == 200, path
+                  return response.url
+
+          get("/healthz")
+
+          form = urllib.parse.urlencode(
+              {
+                  "name": "CI",
+                  "description": "Prueba automática",
+                  "start_date": "2026-10-06",
+                  "end_date": "2026-10-07",
+                  "start_hour": "9",
+                  "end_hour": "11",
+                  "slot_minutes": "30",
+              }
+          ).encode()
+          event_url = post("/create", form, "application/x-www-form-urlencoded")
+          event_id = event_url.rstrip("/").split("/")[-1]
+          assert event_id, "no se obtuvo el id del evento"
+
+          payload = json.dumps(
+              {"name": "CI", "responses": {"2026-10-06": {"0": 2, "1": 1}}}
+          ).encode()
+          post(f"/api/e/{event_id}/respond", payload, "application/json")
+
+          data = json.loads(get(f"/api/e/{event_id}/results"))
+          scores = [cell["score"] for cell in data["matrix"][0]["cells"]]
+          assert scores[0] == 2, scores
+          assert scores[1] == 1, scores
+          assert [p["name"] for p in data["participants"]] == ["CI"]
+
+          get(f"/e/{event_id}")
+          print("Smoke test OK:", event_id, scores)
+          PY
+
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
+
+  publish:
+    needs: test
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' &&
+       (github.ref == format('refs/heads/{0}', github.event.repository.default_branch) ||
+        startsWith(github.ref, 'refs/tags/v')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lowercase image name
+        run: echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

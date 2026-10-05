@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Crear evento · WhenToMeet 2{% endblock %}
+{% block content %}
+<section class="card narrow">
+  <h1>Crear un evento</h1>
+  <p class="muted">Elige fechas y horarios, crea el evento y comparte el enlace con el grupo.</p>
+
+  {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+  <form method="post" action="{{ url_for('create_event') }}" class="form">
+    <label>Nombre del evento
+      <input name="name" maxlength="120" required value="{{ form.name }}" placeholder="Junta de equipo">
+    </label>
+
+    <label>Descripción (opcional)
+      <textarea name="description" maxlength="500" rows="2" placeholder="¿De qué se trata?">{{ form.description }}</textarea>
+    </label>
+
+    <div class="row">
+      <label>Desde
+        <input type="date" name="start_date" required value="{{ form.start_date }}">
+      </label>
+      <label>Hasta
+        <input type="date" name="end_date" required value="{{ form.end_date }}">
+      </label>
+    </div>
+
+    <div class="row">
+      <label>Hora de inicio
+        <select name="start_hour">
+          {% for h in range(0, 24) %}
+          <option value="{{ h }}" {% if h == form.start_hour %}selected{% endif %}>{{ '%02d:00'|format(h) }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Hora de fin
+        <select name="end_hour">
+          {% for h in range(1, 25) %}
+          <option value="{{ h }}" {% if h == form.end_hour %}selected{% endif %}>{{ '%02d:00'|format(h) }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Duración de franja
+        <select name="slot_minutes">
+          {% for m in slot_options %}
+          <option value="{{ m }}" {% if m == form.slot_minutes %}selected{% endif %}>{{ m }} min</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <div>
+      <button class="btn primary" type="submit">Crear evento</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
