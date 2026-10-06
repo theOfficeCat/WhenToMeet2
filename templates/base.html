@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,12 +9,12 @@
 <body>
   <header class="topbar">
     <a class="brand" href="{{ url_for('index') }}">WhenToMeet <span>2</span></a>
-    <span class="muted small">Sí = 2 · Quizás = 1 · No = 0</span>
+    <span class="muted small">Yes = 2 · Maybe = 1 · No = 0</span>
   </header>
   <main class="container">
     {% block content %}{% endblock %}
   </main>
-  <footer class="footer">Hecho para coordinar sin adivinar disponibilidad.</footer>
+  <footer class="footer">Made to coordinate without guessing availability.</footer>
   {% block scripts %}{% endblock %}
 </body>
 </html>

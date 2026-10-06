@@ -23,8 +23,8 @@ MAX_RANGE_DAYS = 60
 MAX_NAME_LENGTH = 80
 MAX_DESCRIPTION_LENGTH = 500
 
-WEEKDAYS = ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"]
-MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS events (
@@ -167,26 +167,26 @@ def default_form():
 
 def validate_event_form(form):
     if not form["name"]:
-        return "Ponle un nombre al evento."
+        return "Give the event a name."
     if len(form["name"]) > 120:
-        return "El nombre no puede pasar de 120 caracteres."
+        return "The name cannot exceed 120 characters."
     if len(form["description"]) > MAX_DESCRIPTION_LENGTH:
-        return f"La descripción no puede pasar de {MAX_DESCRIPTION_LENGTH} caracteres."
+        return f"The description cannot exceed {MAX_DESCRIPTION_LENGTH} characters."
     try:
         start = date.fromisoformat(form["start_date"])
         end = date.fromisoformat(form["end_date"])
     except ValueError:
-        return "Las fechas no son válidas."
+        return "The dates are not valid."
     if end < start:
-        return "La fecha final debe ser igual o posterior a la inicial."
+        return "The end date must be the same as or later than the start date."
     if (end - start).days + 1 > MAX_RANGE_DAYS:
-        return f"El rango de fechas no puede superar {MAX_RANGE_DAYS} días."
+        return f"The date range cannot exceed {MAX_RANGE_DAYS} days."
     if not 0 <= form["start_hour"] <= 23:
-        return "La hora de inicio no es válida."
+        return "The start time is not valid."
     if not 1 <= form["end_hour"] <= 24 or form["end_hour"] <= form["start_hour"]:
-        return "La hora de fin debe ser mayor que la hora de inicio."
+        return "The end time must be later than the start time."
     if form["slot_minutes"] not in SLOT_OPTIONS:
-        return "La duración de franja no es válida."
+        return "The slot duration is not valid."
     return None
 
 
@@ -283,7 +283,7 @@ def get_participant(event_id):
     get_event(event_id)
     name = (request.args.get("name") or "").strip()
     if not name:
-        return jsonify({"error": "Falta el nombre"}), 400
+        return jsonify({"error": "Name is missing"}), 400
 
     db = get_db()
     participant = db.execute(
@@ -308,9 +308,9 @@ def save_response(event_id):
     data = request.get_json(silent=True) or {}
     name = str(data.get("name") or "").strip()
     if not name:
-        return jsonify({"error": "Escribe tu nombre para guardar."}), 400
+        return jsonify({"error": "Enter your name to save."}), 400
     if len(name) > MAX_NAME_LENGTH:
-        return jsonify({"error": "El nombre es demasiado largo."}), 400
+        return jsonify({"error": "The name is too long."}), 400
 
     rows = read_responses(ev, data.get("responses"))
 

@@ -1,41 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Resultados · {{ event["name"] }}{% endblock %}
+{% block title %}Results · {{ event["name"] }}{% endblock %}
 {% block content %}
 <section class="event-head">
   <div>
     <h1>{{ event["name"] }}</h1>
-    <p class="meta">Resultados en vivo · Sí = 2 · Quizás = 1 · No = 0</p>
+    <p class="meta">Live results · Yes = 2 · Maybe = 1 · No = 0</p>
   </div>
   <div class="actions">
-    <a class="btn" href="{{ url_for('event_page', event_id=event['id']) }}">Responder</a>
+    <a class="btn" href="{{ url_for('event_page', event_id=event['id']) }}">Respond</a>
   </div>
 </section>
 
 <section class="card">
   <div class="results-top">
     <div class="results-col">
-      <h2>Mejores horarios</h2>
-      <ul id="best-list" class="best-list"><li class="muted">Cargando…</li></ul>
+      <h2>Best times</h2>
+      <ul id="best-list" class="best-list"><li class="muted">Loading…</li></ul>
     </div>
     <div class="results-col">
-      <h2>Personas</h2>
+      <h2>People</h2>
       <ul id="people-list" class="people-list"></ul>
     </div>
   </div>
 </section>
 
 <section class="card">
-  <h2>Mapa de disponibilidad</h2>
+  <h2>Availability map</h2>
   <div class="legend">
-    <span class="legend-item"><i class="swatch yes"></i> Sí (2)</span>
-    <span class="legend-item"><i class="swatch maybe"></i> Quizás (1)</span>
+    <span class="legend-item"><i class="swatch yes"></i> Yes (2)</span>
+    <span class="legend-item"><i class="swatch maybe"></i> Maybe (1)</span>
     <span class="legend-item"><i class="swatch no"></i> No (0)</span>
-    <span class="legend-item"><i class="swatch heat"></i> Puntaje total</span>
+    <span class="legend-item"><i class="swatch heat"></i> Total score</span>
   </div>
   <div class="grid-wrap">
     <table class="grid results-grid" id="results-grid"></table>
   </div>
-  <p class="muted small">Pasa el cursor sobre una celda para ver el desglose de votos. Los bordes oscuros marcan el mejor puntaje.</p>
+  <p class="muted small">Hover over a cell to see the vote breakdown. Dark borders mark the best score.</p>
 </section>
 
 <script id="event-data" type="application/json">{{ event_json | safe }}</script>

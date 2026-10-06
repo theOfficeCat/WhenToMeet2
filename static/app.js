@@ -44,7 +44,7 @@
     const headRow = document.createElement("tr");
     const corner = document.createElement("th");
     corner.className = "corner";
-    corner.textContent = "Hora";
+    corner.textContent = "Time";
     headRow.appendChild(corner);
     for (const day of ev.days) {
       const th = document.createElement("th");
@@ -202,7 +202,7 @@
   async function save() {
     const name = nameInput.value.trim();
     if (!name) {
-      setStatus("Escribe tu nombre para guardar.", "error");
+      setStatus("Enter your name to save.", "error");
       nameInput.focus();
       return;
     }
@@ -212,7 +212,7 @@
       (responses[parts[0]] = responses[parts[0]] || {})[parts[1]] = value;
     }
     saveBtn.disabled = true;
-    setStatus("Guardando…");
+    setStatus("Saving…");
     try {
       const res = await fetch("/api/e/" + ev.id + "/respond", {
         method: "POST",
@@ -220,9 +220,9 @@
         body: JSON.stringify({ name: name, responses: responses }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "No se pudo guardar.");
+      if (!res.ok) throw new Error(data.error || "Could not save.");
       dirty = false;
-      setStatus("Guardado · " + state.size + " franja(s) marcada(s).", "ok");
+      setStatus("Saved · " + state.size + " slot(s) marked.", "ok");
     } catch (err) {
       setStatus(err.message, "error");
     } finally {
@@ -244,12 +244,12 @@
         applyState(data.responses);
         dirty = false;
         setStatus(
-          "Cargamos tu respuesta anterior (" + state.size + " franja(s)).",
+          "Loaded your previous answer (" + state.size + " slot(s)).",
           "ok"
         );
       }
     } catch (_) {
-      /* sin conexión: se puede seguir pintando */
+      /* offline: painting can continue */
     }
   }
 
@@ -281,7 +281,7 @@
 
   clearBtn.addEventListener("click", function () {
     if (!state.size) return;
-    if (!window.confirm("¿Borrar todas tus marcas?")) return;
+    if (!window.confirm("Clear all your marks?")) return;
     applyState({});
     markDirty();
   });
@@ -290,12 +290,12 @@
     const button = event.currentTarget;
     try {
       await navigator.clipboard.writeText(window.location.href);
-      button.textContent = "¡Copiado!";
+      button.textContent = "Copied!";
       setTimeout(function () {
-        button.textContent = "Copiar enlace";
+        button.textContent = "Copy link";
       }, 1500);
     } catch (_) {
-      window.prompt("Copia el enlace:", window.location.href);
+      window.prompt("Copy the link:", window.location.href);
     }
   });
 

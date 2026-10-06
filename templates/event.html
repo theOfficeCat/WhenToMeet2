@@ -8,29 +8,29 @@
     <p class="meta">
       {{ event["start_date"] }} → {{ event["end_date"] }} ·
       {{ '%02d:00'|format(event["start_hour"]) }}–{{ '%02d:00'|format(event["end_hour"]) }} ·
-      franjas de {{ event["slot_minutes"] }} min
+      {{ event["slot_minutes"] }}-minute slots
     </p>
   </div>
   <div class="actions">
-    <button class="btn" id="copy-link" type="button">Copiar enlace</button>
-    <a class="btn primary" href="{{ url_for('results_page', event_id=event['id']) }}">Ver resultados</a>
+    <button class="btn" id="copy-link" type="button">Copy link</button>
+    <a class="btn primary" href="{{ url_for('results_page', event_id=event['id']) }}">View results</a>
   </div>
 </section>
 
 <section class="card">
   <div class="picker-top">
-    <label class="name-field">Tu nombre
-      <input id="name" maxlength="80" placeholder="Escribe tu nombre" autocomplete="off">
+    <label class="name-field">Your name
+      <input id="name" maxlength="80" placeholder="Enter your name" autocomplete="off">
     </label>
     <div class="status" id="status"></div>
   </div>
 
   <div class="toolbar">
-    <span class="toolbar-label">Pinta tu disponibilidad:</span>
-    <button type="button" class="brush brush-yes active" data-value="2">Sí</button>
-    <button type="button" class="brush brush-maybe" data-value="1">Quizás</button>
+    <span class="toolbar-label">Paint your availability:</span>
+    <button type="button" class="brush brush-yes active" data-value="2">Yes</button>
+    <button type="button" class="brush brush-maybe" data-value="1">Maybe</button>
     <button type="button" class="brush brush-no" data-value="0">No</button>
-    <button type="button" class="brush brush-erase" data-value="-1">Borrar</button>
+    <button type="button" class="brush brush-erase" data-value="-1">Erase</button>
   </div>
 
   <div class="grid-wrap">
@@ -38,9 +38,9 @@
   </div>
 
   <div class="save-row">
-    <button class="btn primary" id="save" type="button">Guardar disponibilidad</button>
-    <button class="btn" id="clear" type="button">Limpiar todo</button>
-    <span class="muted small">Arrastra para dibujar un rectángulo: se aplica al soltar. Si empiezas sobre una franja ya marcada con el pincel activo, el rectángulo la libera (como when2meet).</span>
+    <button class="btn primary" id="save" type="button">Save availability</button>
+    <button class="btn" id="clear" type="button">Clear all</button>
+    <span class="muted small">Drag to draw a rectangle: it is applied on release. If you start on a slot already marked with the active brush, the rectangle clears it (like when2meet).</span>
   </div>
 </section>
 

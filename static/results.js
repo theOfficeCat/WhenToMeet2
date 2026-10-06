@@ -32,7 +32,7 @@
     const headRow = document.createElement("tr");
     const corner = document.createElement("th");
     corner.className = "corner";
-    corner.textContent = "Hora";
+    corner.textContent = "Time";
     headRow.appendChild(corner);
     for (const day of data.event.days) {
       const th = document.createElement("th");
@@ -60,8 +60,8 @@
         if (ratio > 0.55) td.classList.add("dark");
         td.title =
           day.label + " " + slot.label + "\n" +
-          "Sí: " + cell.yes + " · Quizás: " + cell.maybe + " · No: " + cell.no + "\n" +
-          "Puntaje: " + cell.score;
+          "Yes: " + cell.yes + " · Maybe: " + cell.maybe + " · No: " + cell.no + "\n" +
+          "Score: " + cell.score;
         if (cell.score > 0) td.textContent = cell.score;
         tr.appendChild(td);
       }
@@ -78,7 +78,7 @@
     if (!people.length) {
       const li = document.createElement("li");
       li.className = "muted";
-      li.textContent = "Nadie ha respondido todavía.";
+      li.textContent = "No one has responded yet.";
       peopleList.appendChild(li);
       return;
     }
@@ -94,7 +94,7 @@
     if (maxScore <= 0) {
       const li = document.createElement("li");
       li.className = "muted";
-      li.textContent = "Aún no hay respuestas para calcular sugerencias.";
+      li.textContent = "No responses yet to compute suggestions.";
       bestList.appendChild(li);
       return;
     }
@@ -131,7 +131,7 @@
       );
       const badge = document.createElement("span");
       badge.className = "badge";
-      badge.textContent = "puntaje " + maxScore;
+      badge.textContent = "score " + maxScore;
       li.appendChild(badge);
       bestList.appendChild(li);
     }
@@ -143,7 +143,7 @@
       if (!res.ok) return;
       render(await res.json());
     } catch (_) {
-      /* reintenta en el siguiente ciclo */
+      /* retry on the next cycle */
     }
   }
 

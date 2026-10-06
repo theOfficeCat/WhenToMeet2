@@ -32,12 +32,12 @@ jobs:
           for i in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:5000/healthz; then
               echo
-              echo "Contenedor saludable"
+              echo "Container healthy"
               exit 0
             fi
             sleep 1
           done
-          echo "El contenedor no respondió a tiempo"
+          echo "The container did not respond in time"
           docker compose logs
           exit 1
 
@@ -73,7 +73,7 @@ jobs:
           form = urllib.parse.urlencode(
               {
                   "name": "CI",
-                  "description": "Prueba automática",
+                  "description": "Automated test",
                   "start_date": "2026-10-06",
                   "end_date": "2026-10-07",
                   "start_hour": "9",
@@ -83,7 +83,7 @@ jobs:
           ).encode()
           event_url = post("/create", form, "application/x-www-form-urlencoded")
           event_id = event_url.rstrip("/").split("/")[-1]
-          assert event_id, "no se obtuvo el id del evento"
+          assert event_id, "no event id was returned"
 
           payload = json.dumps(
               {"name": "CI", "responses": {"2026-10-06": {"0": 2, "1": 1}}}
